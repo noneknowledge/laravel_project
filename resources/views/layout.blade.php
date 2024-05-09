@@ -15,6 +15,11 @@
         
     </head>
     <body class="antialiased">
+        @if (Auth::check())
+        <h1>User da login</h1>
+            
+        @endif
+
         layout
         @yield("content")
         layout

@@ -22,18 +22,26 @@ Route::get('/', function () {
 });
 
 
+Route::middleware("auth")->group(function(){
+    Route::get('/profile',[userController::class,'showProfile']);
+});
+
+
 Route::prefix('test')->group(function () {
     Route::get('/',[lessionController::class,'index']);
 
 });
 
-Route::get('/login', [userController::class,'index']);
+Route::get('/login', [userController::class,'index'])->name('login');
 
 Route::post('/confirmLogin', [userController::class,'postLogin'])->name("confirmLogin");
 
 Route::get('/register', [userController::class,'register']);
 
 Route::post('/register', [userController::class,'postRegister']);
+
+
+Route::get('/logout', [userController::class,'logOut']);
 
 
 

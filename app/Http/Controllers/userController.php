@@ -51,6 +51,16 @@ class userController extends Controller
         
         
     }
+    public function showProfile(){
+        $curUser = Auth::user();
+     
+        return View('user.profile',compact(['curUser']));
+    }
+
+    public function logOut(){
+        Auth::logout();
+        return redirect('/');
+    }
 
     public function postLogin (Request $request) {
        
@@ -81,20 +91,23 @@ class userController extends Controller
   
         if ($user->Password === $hashPBase64)
         {
-            $loggedUser = new User();
-            $loggedUser->UserName= $user->UserName;
+            $logIn = User::where('UserID',$user->UserID)->first();
+            // $loggedUser = new User();
+            // $loggedUser->UserName= $user->UserName;
             
-
-            Auth::login($loggedUser);
+            // Auth::loginUsingId($user->UserID);
+            Auth::login($logIn);
         
             
         }
     
        
 
-        if (Auth::check ()) {
+        // if (Auth::check ()) {
 
-            dd ('Đăng nhập thành công');
-        }
+           
+        //     dd ('Đăng nhập thành công');
+        // }
+        return redirect('/');
     }
 }
