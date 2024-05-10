@@ -17,11 +17,11 @@ class userController extends Controller
 {
     //
     public function index () {
-        return view ('login');
+        return view ('user.login');
     }
 
     public function register(){
-        return view ("register");
+        return view ("user.register");
     }
 
     public function postRegister(Request $request){
@@ -56,6 +56,28 @@ class userController extends Controller
      
         return View('user.profile',compact(['curUser']));
     }
+    public function editProfile(){
+        $curUser = Auth::user();
+
+        return View('user.edit',compact(['curUser']));
+    }
+
+    public function postProfile(Request $req){
+    
+        // dd($req->phone);
+        $user = User::updateOrCreate(['UserId'=>(int)$req->userid],[
+            'FullName'=>$req->fullname,
+        
+            'Phone'=> $req->phone,
+
+            'Email' => $req->email,
+            
+            'DateOfBirth' => $req->dateofbirth
+        ]);
+
+        return redirect('/profile');
+    }
+
 
     public function logOut(){
         Auth::logout();

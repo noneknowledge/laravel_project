@@ -1,4 +1,4 @@
-@extends("layout")
+@extends("layout.layout")
 @section('content')
 <div class="container">
     <div class="main-body">
@@ -50,7 +50,7 @@
                 <div class="card-body">
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0">Full Name</h6>
+                      <h6 class="mb-0">Họ và tên</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {{$curUser->FullName}}
@@ -68,7 +68,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0">Phone</h6>
+                      <h6 class="mb-0">Số điện thoại</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
                       {{$curUser->Phone}}
@@ -77,10 +77,10 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-3">
-                      <h6 class="mb-0">Date of birth</h6>
+                      <h6 class="mb-0">Ngày sinh</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      {{$curUser->dateOfBirth}}
+                      {{$curUser->DateOfBirth}}
                     </div>
                   </div>
                   <!-- <hr> -->
@@ -95,7 +95,7 @@
                   <hr>
                   <div class="row">
                     <div class="col-sm-12">
-                      <a class="btn btn-info " target="__blank" href="https://www.bootdey.com/snippets/view/profile-edit-data-and-skills">Edit</a>
+                      <a class="btn btn-info "href="/edit">Edit</a>
                     </div>
                   </div>
                 </div>

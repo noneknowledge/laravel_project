@@ -15,6 +15,7 @@
         
     </head>
     <body class="antialiased">
+        @include('layout.header')
         @if (Auth::check())
         <h1>User da login</h1>
             
@@ -23,5 +24,6 @@
         layout
         @yield("content")
         layout
+        @include('layout.footer')
     </body>
 </html>

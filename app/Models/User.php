@@ -14,7 +14,7 @@ class User extends Authenticatable
 
     protected $table = 'user';
     protected $primaryKey = 'UserID';
-    protected $fillable = ['UserName', 'Password','FullName','Email','RandomKey'];
+    protected $fillable = ['UserName', 'Password','FullName','Email','RandomKey','DateOfBirth','Phone'];
     public $timestamps = false;
     const UPDATED_AT = null;
     protected $hidden = ['created_at', 'updated_at'];
