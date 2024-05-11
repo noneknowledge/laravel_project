@@ -37,6 +37,7 @@ Route::middleware("auth")->group(function(){
 Route::prefix('lession')->controller(lessionController::class)->group(function(){
     Route::get('/',[lessionController::class,'index']);
     Route::get('/{lessionId}',[lessionController::class,'getLession']);
+    Route::get('/instruction/{lessionId}',[lessionController::class,'showInstruction']);
 
 });
 

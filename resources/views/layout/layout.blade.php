@@ -24,6 +24,9 @@
         layout
         @yield("content")
         layout
+        
         @include('layout.footer')
+
+        @yield("scripts")
     </body>
 </html>
