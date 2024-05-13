@@ -19,4 +19,15 @@ class UserProgress extends Model
     {
       return $this->belongsTo(Vocab::class, 'VocabID');
     }
+
+    public function sentences()
+    {
+      return $this->belongsTo(Sentence::class, 'SenID');
+    }
+
+    public function readings()
+    {
+      return $this->belongsTo(Reading::class, 'ReadID');
+    }
+
 }

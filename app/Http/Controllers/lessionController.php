@@ -12,6 +12,7 @@ use App\Models\UserProgress;
 use app\Models\LessionTest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 class lessionController extends Controller
 {
@@ -39,15 +40,24 @@ class lessionController extends Controller
 
     public function vocabTest($lessionId){
         $userid = Auth::user()->UserID;
+        $doneVocab = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->Count();
 
-        $vocabs = Vocab::where('LessionID',$lessionId)->first();
-        dd($vocabs);
+        //Trong may co san loai tron lai roi hay dung lai chua sua view
+        $vocab = Vocab::where('LessionID',$lessionId)->skip($doneVocab)->first();
+        dd($vocab);
+        //nho kiem tra neu null se khong co lam bai vi da hoan thanh
 
-        return View('lession.vocab',$vocabs);
+        return View('lession.vocab',$vocab);
     }
 
     public function nextVocab(Request $req){
         //tao view roi tao form gui post len day
+        
+
     }
 
     public function resetVocab($lessionId){
@@ -60,7 +70,23 @@ class lessionController extends Controller
 
 
     public function readingTest($lessionId){
+        $userid = Auth::user()->UserID;
+        $doneReading = UserProgress::whereHas('readings',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->Count();
+
+        $reading = Vocab::where('LessionID',$lessionId)->skip($doneReading)->first();
+        if($reading == null)
+        {
+            dd($reading);
+        }
         
+        //nho kiem tra neu null se khong co lam bai vi da hoan thanh
+
+        return View('lession.vocab',$reading);
+
     }
     
     public function nextReading(Request $req){
@@ -72,11 +98,44 @@ class lessionController extends Controller
     }
 
     public function sentenceTest($lessionId){
-        
+        $userid = Auth::user()->UserID;
+        $doneSentence = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->Count();
+        if($doneSentence > 0){
+            $sentence = Sentence::where('lessionID',$lessionId)->skip($doneSentence)->first();
+        }
+   
+        else{
+            $sentence = Sentence::where('lessionID',$lessionId)->first();
+        }
+
+        $score = 0;
+        $index = $doneSentence;
+
+        return View('lession.sentence',compact(['sentence','lessionId','score','index']));
+
     }
 
     public function nextSentence(Request $req){
         
+        $userid = Auth::user()->UserID;
+        $istrue = $req->istrue;
+        //Khuc nay nho lay userid cap nhat vao database
+        
+        
+        $index = $req->index +1;
+        $score = (int)$req->score;
+        $lessionId = $req->lessionId;
+        $sentence = Sentence::where('lessionID',$lessionId)->skip($index)->first();
+        if ($sentence == null)
+        {
+            return Redirect("/lession/$lessionId/test");
+        }
+        return View('lession.sentence',compact(['sentence','lessionId','score','index']));
+
     }
 
 
@@ -86,6 +145,7 @@ class lessionController extends Controller
 
     public function showTest($lessionId){
         $userid = Auth::user()->UserID;
+        //hinh nhu chua ap dung vo bat ky user id cu the nao
         $totalVocab = Vocab::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
         })->Count();

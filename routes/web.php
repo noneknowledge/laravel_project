@@ -42,6 +42,9 @@ Route::prefix('lession')->controller(lessionController::class)->group(function()
         Route::post('/resetvocab','resetVocab');
         Route::post('/resetsentence','resetSentence');
         Route::post('/resetreading','resetReading');
+        Route::post('/vocab','nextVocab');
+        Route::post('/sentence','nextSentence');
+        Route::post('/reading','nextReading');
 
 
     });
