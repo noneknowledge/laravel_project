@@ -30,11 +30,62 @@ class lessionController extends Controller
         return View('lession.instruction',compact(['vocabs','sentences','lessionId','grammars']));
     }
 
-    public function showTest($lessionId){
+    public function finalTest($lessionId){
+        $vocabs = Vocab::where('LessionID',$lessionId)->inRandomOrder()->take(5)->get();
+        $sentences = Sentence::where('LessionID',$lessionId)->inRandomOrder()->take(3)->get();
+        $reading = Reading::where('LessionID',$lessionId)->first();
+        dd($reading);
+    }
+
+    public function vocabTest($lessionId){
         $userid = Auth::user()->UserID;
 
+        $vocabs = Vocab::where('LessionID',$lessionId)->first();
+        dd($vocabs);
+
+        return View('lession.vocab',$vocabs);
+    }
+
+    public function nextVocab(Request $req){
+        //tao view roi tao form gui post len day
+    }
+
+    public function resetVocab($lessionId){
+        $userid = Auth::user()->UserID;
+        //xai where has function
+        $userVocab = UserProgress::where('UserID',$userid)->where('LessionID',$lessionId)->delete();
+
+
+    }
+
+
+    public function readingTest($lessionId){
         
-      
+    }
+    
+    public function nextReading(Request $req){
+        
+    }
+
+    public function resetReading($lessionId){
+
+    }
+
+    public function sentenceTest($lessionId){
+        
+    }
+
+    public function nextSentence(Request $req){
+        
+    }
+
+
+    public function resetSentence($lessionId){
+
+    }
+
+    public function showTest($lessionId){
+        $userid = Auth::user()->UserID;
         $totalVocab = Vocab::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
         })->Count();
@@ -73,8 +124,6 @@ class lessionController extends Controller
         return View('lession.test',compact(['lessionId','doneVocab','doneReading','doneSentence','totalVocab'
         ,'totalReading','totalSentence','vocabPercent','readPercent','senPercent'
     ]));
-
-        
     }
 
     public function getLession($lessionId){

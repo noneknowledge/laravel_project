@@ -16,7 +16,7 @@ Lession {{$lessionId}} Test
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('vocab')">Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
-                <button class="btn btn-success" routerLink="/test/{{$lessionId}}/vocab/keep">Tiếp tục <i class="fa-solid fa-play"></i></button>
+                <a class="btn btn-success" href="/lession/{{$lessionId}}/vocab">Tiếp tục <i class="fa-solid fa-play"></i></a>
             </div>
            
         </div>
@@ -41,7 +41,7 @@ Lession {{$lessionId}} Test
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('reading')" >Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
-                <button class="btn btn-success" routerLink="/test/{{$lessionId}}/reading/keep">Tiếp tục <i class="fa-solid fa-play"></i></button>
+                <a class="btn btn-success" href="/lession/{{$lessionId}}/reading">Tiếp tục <i class="fa-solid fa-play"></i></a>
             </div>
            
         </div>
@@ -65,7 +65,7 @@ Lession {{$lessionId}} Test
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('sentence')" >Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
-                <button class="btn btn-success" routerLink="/test/{{$lessionId}}/sentence/keep">Tiếp tục <i class="fa-solid fa-play"></i></button>
+                <a class="btn btn-success" href="/lession/{{$lessionId}}/sentence">Tiếp tục <i class="fa-solid fa-play"></i></a>
             </div>
            
         </div>
@@ -86,7 +86,7 @@ Lession {{$lessionId}} Test
         <hr>
         <div class="d-flex justify-content-between">
             <h3>Kiểm tra</h3>
-            <button class="btn btn-primary" routerLink="/lession/{{$lessionId}}">Bắt đầu</button>
+            <a class="btn btn-primary" href="/lession/{{$lessionId}}/final">Bắt đầu</a>
         </div>
       
     </div>
@@ -116,6 +116,8 @@ Lession {{$lessionId}} Test
 @section('scripts')
 <script>
 var redoPart = '';
+const lessionId = @json($lessionId) ;
+
 const confirmLink = document.getElementById("clearLink");
 const redoSpan = document.getElementById("redoPart");
 const modal = document.getElementById("modal");
@@ -128,12 +130,14 @@ function showModal(type){
     redoSpan.innerHTML = type
     modal.classList.toggle('d-none')
     overlayDiv.classList.toggle('d-none')
+    confirmLink.href = '/lession/' + lessionId +'/reset' + type;
     
 }
 
 function closeModal(){
     modal.classList.toggle('d-none')
     overlayDiv.classList.toggle('d-none')
+    confirmLink.href = "#"
 }
 
 // window.onload = function() {

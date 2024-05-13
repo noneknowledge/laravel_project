@@ -30,10 +30,26 @@ Route::middleware("auth")->group(function(){
 });
 
 Route::prefix('lession')->controller(lessionController::class)->group(function(){
-    Route::get('/',[lessionController::class,'index']);
-    Route::get('/{lessionId}',[lessionController::class,'getLession']);
-    Route::get('/instruction/{lessionId}',[lessionController::class,'showInstruction']);
-    Route::get('/{lessionId}/test',[lessionController::class,'showTest'])->middleware('auth');
+    Route::get('/','index');
+    Route::get('/{lessionId}','getLession');
+    Route::get('/instruction/{lessionId}','showInstruction');
+    Route::prefix('/{lessionId}')->middleware('auth')->group(function(){
+        Route::get('/test','showTest');
+        Route::get('/final','finalTest');
+        Route::get('/vocab','vocabTest');
+        Route::get('/sentence','sentenceTest');
+        Route::get('/reading','readingTest');
+        Route::post('/resetvocab','resetVocab');
+        Route::post('/resetsentence','resetSentence');
+        Route::post('/resetreading','resetReading');
+
+
+    });
+    // Route::get('/{lessionId}/test','showTest')->middleware('auth');
+    // Route::get('/{lessionId}/final','finalTest')->middleware('auth');
+    // Route::get('/{lessionId}/vocab','vocabTest')->middleware('auth');
+    // Route::get('/{lessionId}/sentence','sentenceTest')->middleware('auth');
+    // Route::get('/{lessionId}/reading','readingTest')->middleware('auth');
 
 });
 
