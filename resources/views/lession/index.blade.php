@@ -1,4 +1,5 @@
 @extends("layout.layout")
+@section('title','Lessions')
 
 @section("content")
 <h1 class="d-flex justify-content-center">Đây là page admin nè</h1>

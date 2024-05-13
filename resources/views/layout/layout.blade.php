@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>@yield('title')</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -16,14 +16,9 @@
     </head>
     <body class="antialiased">
         @include('layout.header')
-        @if (Auth::check())
-        <h1>User da login</h1>
-            
-        @endif
 
-        layout
         @yield("content")
-        layout
+       
         
         @include('layout.footer')
 

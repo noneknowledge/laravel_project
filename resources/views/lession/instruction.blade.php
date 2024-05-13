@@ -1,4 +1,7 @@
 @extends('layout.layout')
+@section('title')
+Lession {{$lessionId}} instruction
+@endsection
 
 @section('content')
 
@@ -6,11 +9,11 @@
     <h1 class="text-center">Lession {{$lessionId}}</h1>
     <div class="row m-3 border border-danger" style="height: 100%;">
         <div class="col-3 border border-success d-flex flex-column" style="height: 95%;">
-            <h3 onclick="changeTab()" [ngClass]="(currentTab==='Vocab')?'tabActive':null"  class="text-center test mt-5 p-2 " >Vocab</h3>
-            <h3 onclick="changeTab()" [ngClass]="(currentTab==='Grammar')?'tabActive':null" class="text-center  test mt-5 p-2 " >Grammar</h3>
-            <!-- <h3 (click)="changeTab($event)" [ngClass]="(currentTab==='Reading')?'tabActive':null" class="text-center  test mt-5 p-2 " >Reading</h3> -->           
+            <h3 onclick="changeTab('vocab')" [ngClass]="(currentTab==='Vocab')?'tabActive':null"  class="text-center test mt-5 p-2 " >Vocab</h3>
+            <h3 onclick="changeTab('sentence')" [ngClass]="(currentTab==='Grammar')?'tabActive':null" class="text-center  test mt-5 p-2 " >Sentence</h3>
+            <h3 onclick="changeTab('grammar')" [ngClass]="(currentTab==='Grammar')?'tabActive':null" class="text-center  test mt-5 p-2 " >Grammar</h3>
         </div>
-        <div class="col-8 border border-info" style="height: 95%;">
+        <div class="col-8 p-4 border border-info" style="height: 95%;">
             <div *ngIf="currentTab === 'Vocab'" id='vocabTab' style="height:100%" class="overflow-scroll">
                 <h2 class="text-center">Vocab</h2>
                 <div class="my-4" *ngIf="response !== undefined">
@@ -46,19 +49,35 @@
                
             </div>  
         
+            <div class="d-none" id='sentenceTab'>
+                <h2 class="text-center">Sentence</h2>
+               
+                <div>
+                    @foreach($sentences as $sentence)
+                    <div class='m-3 p-3'>
+                        <h2>{{$loop->index +1}}. {{str_replace('_',$sentence->FillWord,$sentence->BlankSentence)}}</h2>
+                        <h3 class='text text-secondary'>{{$sentence->Vietnamese}}</h3>
+                    </div>
+                    <hr>
+                    @endforeach
+                </div>
+            </div> 
             <div class="d-none" id='grammarTab'>
                 <h2 class="text-center">Grammar</h2>
                
                 <div>
-                    @foreach($sentences as $sentence)
-                    <div>
-                        <h2>{{str_replace('_',$sentence->FillWord,$sentence->BlankSentence)}}</h2>
-                        <h3 class='text text-sencondary'>{{$sentence->Vietnamese}}</h3>
+                    @foreach($grammars as $grammar)
+                    <hr>
+                    <div class='m-3 p-3 '>
+                        <h1>{{$loop->index +1}}. {{$grammar->Formula}}</h1>
+                        <h2 class='text text-secondary'>{{$grammar->Example}}</h2>
+                        <h3>{{$grammar->Note}}</h2>
+                      
                     </div>
+                  
                     @endforeach
                 </div>
             </div> 
-        
         </div>
     </div>
     
@@ -72,12 +91,13 @@
 @section("scripts")
 <script>
 
-
+var currentTab = null
 var voices = []
 var speech = new SpeechSynthesisUtterance();
 const selectTag = document.getElementById("voiceSelect");
 const vocabDiv = document.getElementById("vocabTab");
 const grammarDiv = document.getElementById("grammarTab");
+const sentenceDiv = document.getElementById("sentenceTab");
 
 window.speechSynthesis.onvoiceschanged = () =>{
         voices = window.speechSynthesis.getVoices()
@@ -96,9 +116,45 @@ function speak(text){
     window.speechSynthesis.speak(speech)
 }
 
-function changeTab(){
-    vocabDiv.classList.toggle("d-none")
-    grammarDiv.classList.toggle("d-none")
+function changeTab(tab){
+    
+    switch  (tab){
+        case "vocab":
+            console.log(tab)
+            
+            if(currentTab === null){
+            }
+            else{
+                vocabDiv.classList.toggle("d-none")
+                currentTab.classList.toggle("d-none")
+            }
+            currentTab = vocabDiv;
+            break;
+        case "sentence":
+            console.log(tab)
+        sentenceDiv.classList.toggle("d-none")
+        if(currentTab === null){
+            vocabDiv.classList.toggle("d-none")
+        }
+        else{
+            currentTab.classList.toggle("d-none")
+        }
+        currentTab = sentenceDiv;
+            break;
+        case "grammar":
+            console.log(tab)
+        grammarDiv.classList.toggle("d-none")
+        if(currentTab === null){
+            vocabDiv.classList.toggle("d-none")
+        }
+        else{
+            currentTab.classList.toggle("d-none")
+        }
+        currentTab = grammarDiv;
+        break;
+        
+    }
+   
 
 }
 </script>

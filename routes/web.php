@@ -26,18 +26,14 @@ Route::middleware("auth")->group(function(){
     Route::get('/profile',[userController::class,'showProfile']);
     Route::get('/edit',[userController::class,'editProfile']);
     Route::post('/editProfile',[userController::class,'postProfile']);
+    Route::post('/postComment', [userController::class,'postComment']);
 });
-
-
-// Route::prefix('lession')->group(function () {
-//     Route::get('/',[lessionController::class,'index']);
-//     Route::get('/{lessionId}',[lessionController::class,'index']);
-// });
 
 Route::prefix('lession')->controller(lessionController::class)->group(function(){
     Route::get('/',[lessionController::class,'index']);
     Route::get('/{lessionId}',[lessionController::class,'getLession']);
     Route::get('/instruction/{lessionId}',[lessionController::class,'showInstruction']);
+    Route::get('/{lessionId}/test',[lessionController::class,'showTest'])->middleware('auth');
 
 });
 
@@ -49,7 +45,7 @@ Route::controller(userController::class)->group(function () {
 
     Route::get('/register', 'register');
 
-    Route::post('/logout', 'logOut');
+    Route::get('/logout', 'logOut');
 
 
 });

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserLession;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -62,6 +64,19 @@ class userController extends Controller
         return View('user.edit',compact(['curUser']));
     }
 
+    public function postComment(Request $req){
+        
+        $userid = Auth::user()->UserID;
+        $date = now()->toDateString();
+        $comment = UserLession::updateOrCreate(['UserID'=>$userid,'LessionID'=>(int)$req->lessionid],[
+            'Comment'=>$req->comment,
+
+            'CommentDate' => $date,
+        ]);
+        
+        return redirect("lession/$req->lessionid");
+    }
+
     public function postProfile(Request $req){
     
         // dd($req->phone);
@@ -81,7 +96,7 @@ class userController extends Controller
 
     public function logOut(){
         Auth::logout();
-        return redirect('/');
+        return redirect('/lession');
     }
 
     public function postLogin (Request $request) {
@@ -105,31 +120,13 @@ class userController extends Controller
         $randomKey = $user->RandomKey;
         $hashP = hash('sha512',$password.$randomKey);
         $hashPBase64 = base64_encode(hex2bin($hashP));
-        
-        // $credentials = [
-        //     'username' => $username,
-        //     'password' => $hashPBase64,
-        // ];
-  
+    
         if ($user->Password === $hashPBase64)
         {
             $logIn = User::where('UserID',$user->UserID)->first();
-            // $loggedUser = new User();
-            // $loggedUser->UserName= $user->UserName;
-            
-            // Auth::loginUsingId($user->UserID);
             Auth::login($logIn);
-        
-            
         }
-    
-       
 
-        // if (Auth::check ()) {
-
-           
-        //     dd ('Đăng nhập thành công');
-        // }
         return redirect('/');
     }
 }
