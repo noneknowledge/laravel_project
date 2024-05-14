@@ -52,7 +52,7 @@ class lessionController extends Controller
             });
         })->Count();
 
-        $question = vocab::where('LessionId',$lessionId)->skip($doneVocab)->first();
+        $question = Vocab::where('LessionId',$lessionId)->skip($doneVocab)->first();
         if($question == null)
         {
             return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành vocabulary
@@ -70,7 +70,7 @@ class lessionController extends Controller
     }
 
     public function nextVocab(Request $req){
-        //tao view roi tao form gui post len day
+        
         $userid = Auth::user()->UserID;
         $istrue = $req->istrue;
      
@@ -83,7 +83,7 @@ class lessionController extends Controller
         $score = (int)$req->score;
       
         $lessionId = $req->lessionId;
-        $question = vocab::where('LessionId',$lessionId)->skip($index)->first();
+        $question = Vocab::where('LessionId',$lessionId)->skip($index)->first();
         if($question == null)
         {
             return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành vocabulary
@@ -124,15 +124,36 @@ class lessionController extends Controller
             return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành reading
              lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
         }
-        
+        $score = 0;
+        $index = $doneReading;
+
         //nho kiem tra neu null se khong co lam bai vi da hoan thanh
 
-        return View('lession.reading',$reading);
+        return View('lession.reading',compact(['reading','lessionId','index','score']));
 
     }
     
     public function nextReading(Request $req){
+        $userid = Auth::user()->UserID;
+
+ 
+        $newProgress = UserProgress::updateOrCreate(['UserID'=>(int)$userid,'ReadingId'=> (int)$req->readid],
+        ['IsTrue'=> $req->istrue,'AdditionalAnswer'=> $req->additionalanswer]  
+        );
         
+        $index = $req->index +1;
+        $score = (int)$req->score;
+      
+        $lessionId = $req->lessionId;
+        $reading = Reading::where('LessionId',$lessionId)->skip($index)->first();
+        if($reading == null)
+        {
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành reading
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
+        }
+        
+
+        return View('lession.reading',compact(['reading','lessionId','index','score']));
     }
 
     public function resetReading($lessionId){
@@ -162,6 +183,11 @@ class lessionController extends Controller
             $sentence = Sentence::where('lessionID',$lessionId)->first();
         }
 
+        if($sentence == null)
+        {
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành sentence
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
+        }
         $score = 0;
         $index = $doneSentence;
 
@@ -175,9 +201,8 @@ class lessionController extends Controller
         $istrue = $req->istrue;
      
         //Khuc nay nho lay userid cap nhat vao database
-        $newProgress = UserProgress::Create(['UserID'=>(int)$userid,'SentenceId'=> (int)$req->sentenceid
-            ,'IsTrue'=> $req->istrue
-        ]);
+        $newProgress = UserProgress::updateOrCreate(['UserID'=>(int)$userid,'SentenceId'=> (int)$req->sentenceid]
+            ,['IsTrue'=> $req->istrue]);
         
         $index = $req->index +1;
         $score = (int)$req->score;
@@ -226,29 +251,46 @@ class lessionController extends Controller
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
-        })->Count();
-        
+        });
 
+        $doneVocabCount = $doneVocab->count();
+
+        $passVocab = $doneVocab->where('IsTrue','true')->count();
+        $failVocab = $doneVocabCount - $passVocab;
   
-
         $doneSentence = UserProgress::where('UserID',$userid)->whereHas('sentences',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
-        })->Count();
+        });
+
+        $doneSentenceCount = $doneSentence->Count();
+        $passSentence = $doneSentence->where('IsTrue','true')->count();
+        $failSentence = $doneSentenceCount - $passSentence;
 
         $doneReading = UserProgress::where('UserID',$userid)->whereHas('readings',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
-        })->Count();
+        });
+        $doneReadingCount = $doneReading->count();
+        $passReading = $doneReading->where('Istrue','true')->count() + $doneReading->where('AdditionalAnswer','true')->count();
+
+        $pVocabPercent = (double)number_format($passVocab/$totalVocab *100,0,'.','');
+        $pReadingPercent =(double)number_format($passReading/$totalReading *50,0,'.','');
+        $pSentencePercent = (double)number_format($passSentence/$totalSentence *100,0,'.','');
         
-        $vocabPercent = (double)number_format($doneVocab/$totalVocab *100,0,'.','');
-        $readPercent =  (double)number_format($doneReading/$totalReading *100,0,'.','');
-        $senPercent = (double)number_format($doneSentence/$totalSentence*100,0,'.','');
+        $vocabPercent = (double)number_format($doneVocabCount/$totalVocab *100,0,'.','');
+        $readPercent =  (double)number_format($doneReadingCount/$totalReading *100,0,'.','');
+        $senPercent = (double)number_format($doneSentenceCount/$totalSentence*100,0,'.','');
+
+        $fVocabPercent = $vocabPercent - $pVocabPercent;
+        $fSentencePercent = $senPercent - $pSentencePercent;
+        $fReadingPercent = $readPercent - $pReadingPercent;
         
-        return View('lession.test',compact(['lessionId','doneVocab','doneReading','doneSentence','totalVocab'
-        ,'totalReading','totalSentence','vocabPercent','readPercent','senPercent'
+        return View('lession.test',compact(['lessionId','doneVocabCount','doneReadingCount','doneSentenceCount','totalVocab'
+        ,'totalReading','totalSentence','vocabPercent','readPercent','senPercent','pVocabPercent','pReadingPercent',
+        'pSentencePercent','fVocabPercent','fSentencePercent','fReadingPercent',
     ]));
     }
 

@@ -29,9 +29,10 @@ Lession {{$lessionId}} Test
    
     <div class="p-3">
         <hr>
+       
         <h1 class="text-center"> Lession {{$lessionId}}: Kiểm tra </h1>
         <div class="m-3 d-flex justify-content-between">
-            <h3>Vocab: {{$doneVocab}}/{{$totalVocab}}</h3>
+            <h3>Vocab: {{$doneVocabCount}}/{{$totalVocab}}</h3>
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('vocab')">Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
@@ -42,13 +43,13 @@ Lession {{$lessionId}} Test
         <div class="progress">
         <div class="progress" style="width: 100%">
             
-            <div class="progress-bar bg-success" style="width: {{$vocabPercent}}%"
-              >{{$vocabPercent}}%
+            <div class="progress-bar bg-success" style="width: {{$pVocabPercent}}%"
+              >{{$pVocabPercent}}%
             </div>
-            <!-- <div class="progress-bar bg-danger 
-                progress-bar-stripped" style="width: 30%">
-                30%
-            </div> -->
+            <div class="progress-bar bg-danger 
+                progress-bar-stripped" style="width: {{$fVocabPercent}}%">
+                {{$fVocabPercent}}%
+            </div>
         </div>
         </div>
     </div>
@@ -56,7 +57,7 @@ Lession {{$lessionId}} Test
     <div class="p-3">
         <hr>
         <div class="m-3 d-flex justify-content-between">
-            <h3>Reading: {{$doneReading}}/{{$totalReading}}</h3>
+            <h3>Reading: {{$doneReadingCount}}/{{$totalReading}}</h3>
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('reading')" >Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
@@ -67,20 +68,20 @@ Lession {{$lessionId}} Test
         <div class="progress">
         <div class="progress" style="width: 100%">
             
-            <div class="progress-bar bg-success" style="width: {{$readPercent}}%"
-          >{{$readPercent}}%
+            <div class="progress-bar bg-success" style="width: {{$pReadingPercent}}%"
+          >{{$pReadingPercent}}%
             </div>
-            <!-- <div class="progress-bar bg-danger 
-                progress-bar-stripped" style="width: 30%">
-                30%
-            </div> -->
+            <div class="progress-bar bg-danger 
+                progress-bar-stripped"  style="width: {{$fReadingPercent}}%">
+                {{$fReadingPercent}}%
+            </div>
         </div>
         </div>
     </div>
     <div class="p-3">
         <hr>
         <div class="m-3 d-flex justify-content-between">
-            <h3>Sentence: {{$doneSentence}}/{{$totalSentence}}</h3>
+            <h3>Sentence: {{$doneSentenceCount}}/{{$totalSentence}}</h3>
             <div class="d-flex justify-content-between">
                 <button class="btn btn-danger" onclick="showModal('sentence')" >Làm lại từ đầu <i class="fa-solid fa-repeat"></i></button>
                 <div class="vr mx-3"></div>
@@ -91,13 +92,13 @@ Lession {{$lessionId}} Test
         <div class="progress">
         <div class="progress" style="width: 100%">
             
-            <div class="progress-bar bg-success" style="width: {{$senPercent}}%"
-            >{{$senPercent}}%
+            <div class="progress-bar bg-success" style="width: {{$fSentencePercent}}%"
+            >{{$pSentencePercent}}%
             </div>
-            <!-- <div class="progress-bar bg-danger 
-                progress-bar-stripped" style="width: 30%">
-                30%
-            </div> -->
+            <div class="progress-bar bg-danger 
+                progress-bar-stripped" style="width: {{$fSentencePercent}}%">
+                {{$fSentencePercent}}%
+            </div>
         </div>
         </div>
     </div>

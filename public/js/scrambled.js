@@ -69,7 +69,6 @@ class ScrambledCont{
         
     }
     textClicked(event){
-
         var elementVal = event.target.innerHTML
         this.speak(elementVal);
         
@@ -164,15 +163,24 @@ class ScrambledCont{
             var finalAnswer = this.answer.map(a=>a.value).join(" ").trim()
             console.log(finalAnswer)
             // stopInterval();
+            this.clearListener()
+            
             if(this.question === finalAnswer)
                 {
                     score += 100             
                     scorePlace.innerHTML = `Score: ${score}`
                     formTrue.value = 'true'
                     formScore.value = score;
+                    for (let i = 0; i< this.answer.length;i++){
+                        this.answer[i].el.classList.add('bg-success')
+                    }
                 }
-        
-            this.clearListener()
+            else{
+                for (let i = 0; i< this.answer.length;i++){
+                    this.answer[i].el.classList.add('bg-danger')
+                }
+            }
+            
             button.setAttribute("disabled","disabled")
         },{once:true})
         this.canva.appendChild(button)
