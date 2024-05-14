@@ -35,7 +35,9 @@ class lessionController extends Controller
         $vocabs = Vocab::where('LessionID',$lessionId)->inRandomOrder()->take(5)->get();
         $sentences = Sentence::where('LessionID',$lessionId)->inRandomOrder()->take(3)->get();
         $reading = Reading::where('LessionID',$lessionId)->first();
-        dd($reading);
+        
+
+        return View('lession.final',compact(['vocabs','sentences','reading']));
     }
 
     public function get4Vocab($lessionId,$vocab){
