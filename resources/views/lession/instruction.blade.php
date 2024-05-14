@@ -69,7 +69,10 @@ Lession {{$lessionId}} instruction
                     @foreach($grammars as $grammar)
                     <hr>
                     <div class='m-3 p-3 '>
-                        <h1>{{$loop->index +1}}. {{$grammar->Formula}}</h1>
+                        <h1 >{{$loop->index +1}}</h1>
+                        @foreach(explode('\n',$grammar->Formula) as $formula)
+                        <h1>{{$formula}}</h1>
+                        @endforeach
                         <h2 class='text text-secondary'>{{$grammar->Example}}</h2>
                         <h3>{{$grammar->Note}}</h2>
                       

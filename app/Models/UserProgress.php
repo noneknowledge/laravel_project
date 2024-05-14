@@ -22,12 +22,12 @@ class UserProgress extends Model
 
     public function sentences()
     {
-      return $this->belongsTo(Sentence::class, 'SenID');
+      return $this->belongsTo(Sentence::class, 'SentenceId');
     }
 
     public function readings()
     {
-      return $this->belongsTo(Reading::class, 'ReadID');
+      return $this->belongsTo(Reading::class, 'ReadingId');
     }
 
 }

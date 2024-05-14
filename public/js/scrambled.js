@@ -3,15 +3,37 @@ console.log('imported')
 class ScrambledCont{
     constructor(question, canva){
         this.question = question.trim()
-
         this.textClass = ["d-inline","border","p-2","position-absolute","rounded","moveAnimate","h1-clickable","shadow"]
         this.heading = "Hãy sắp xếp các từ sau thành câu hoàn chỉnh."
         this.canva = canva;
         this.answer = []
         this.toRect
         this.fromRect
+        this.speech = new SpeechSynthesisUtterance();
+        this.voices = []
+
         this.builder();     
     }   
+    createOption(){
+       
+        var SelectVoice = document.createElement("select")
+        
+        window.speechSynthesis.onvoiceschanged = () =>{
+           
+            this.voices = window.speechSynthesis.getVoices()
+            this.speech.voice = this.voices[0]
+            this.voices.forEach((x,index)=>{
+              
+                SelectVoice.options[index] = new Option(x.name,index)
+            })
+        }
+        SelectVoice.addEventListener("change",()=>{
+            this.speech.voice = this.voices[SelectVoice.value]
+        })
+        // this.container.appendChild(SelectVoice)
+        return SelectVoice
+    }
+
     createOutLine(){
         var container =  document.createElement("div");
         container.classList.add("p-4")
@@ -49,6 +71,7 @@ class ScrambledCont{
     textClicked(event){
 
         var elementVal = event.target.innerHTML
+        this.speak(elementVal);
         
 
         if (this.answer.find(a=>a.value === elementVal))
@@ -155,9 +178,14 @@ class ScrambledCont{
         this.canva.appendChild(button)
     }
     builder(){
+        this.canva.appendChild(this.createOption());
         this.createOutLine()
         this.textAndButton()
        
+    }
+    speak(text){
+        this.speech.text = text
+        window.speechSynthesis.speak(this.speech)
     }
     hoverTest(e){
         e.target.classList.add("bg-info")

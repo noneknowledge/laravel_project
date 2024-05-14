@@ -127,6 +127,6 @@ class userController extends Controller
             Auth::login($logIn);
         }
 
-        return redirect('/');
+        return redirect('/lession');
     }
 }

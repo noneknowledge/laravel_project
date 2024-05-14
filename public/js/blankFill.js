@@ -4,7 +4,6 @@ class fillInBlank {
         this.question = question
         this.bingo = bingo.split(" ")
         this.image = image
-        console.log(this.image)
         this.builder()
     }
 
@@ -18,6 +17,7 @@ class fillInBlank {
     createImage(){
         var div = document.createElement('div')
         div.classList.add("d-flex")
+        div.classList.add("my-3")
         div.classList.add("justify-content-center")
 
         var img = document.createElement('img')
@@ -42,7 +42,7 @@ class fillInBlank {
         var text = document.createElement("h2")
         text.classList.add("m-3")
         var questionPart =this.question.replaceAll("__","_").split(" ")
-        console.log(questionPart)
+     
         questionPart.forEach((x)=>{
             if(x === "_"){
                 text.appendChild(this.createBlank())
@@ -57,9 +57,13 @@ class fillInBlank {
 
     }
     createConfirmBTN(){
+        var div = document.createElement("div")
+        div.classList.add('text-center')
         var button = document.createElement("button")
-        button.innerHTML = "confirm"
+        button.innerHTML = "Kiểm tra"
         button.classList.add("btn")
+        button.classList.add("btn-lg")
+        button.classList.add("text")
         button.classList.add("btn-outline-success")
         button.addEventListener("click",()=>{
             var inputHTMLs = this.container.getElementsByClassName("input-value")
@@ -67,7 +71,7 @@ class fillInBlank {
             
             var inputArray = []
             for(let i = 0; i < inputHTMLs.length;i++){
-                console.log(inputHTMLs[i].value)
+               
                 inputArray.push(inputHTMLs[i].value)
             } 
             if (inputArray.length===0)
@@ -76,7 +80,7 @@ class fillInBlank {
             }
             
             var bingoText = this.bingo.join(" ")
-            console.log("bingo: " + bingoText)
+          
             if (inputArray.length !== this.bingo.length)
             {
                 console.log("code sai rồi")
@@ -85,8 +89,7 @@ class fillInBlank {
             var trueBlank = 0
             for (let i = 0; i< inputArray.length;i++)
             {
-                console.log(inputArray[i])
-                console.log(this.bingo[i])
+              
                 if(inputArray[i].toLowerCase().trim() === this.bingo[i].toLowerCase().trim())
                 {
                     inputHTMLs[i].classList.add("bg-success")
@@ -108,7 +111,8 @@ class fillInBlank {
             
             button.setAttribute("disabled","disabled")      
         })
-        return button
+        div.appendChild(button);
+        return div
     }
     createBlank(){
         var input = document.createElement("input")

@@ -39,9 +39,9 @@ Route::prefix('lession')->controller(lessionController::class)->group(function()
         Route::get('/vocab','vocabTest');
         Route::get('/sentence','sentenceTest');
         Route::get('/reading','readingTest');
-        Route::post('/resetvocab','resetVocab');
-        Route::post('/resetsentence','resetSentence');
-        Route::post('/resetreading','resetReading');
+        Route::get('/resetvocab','resetVocab');
+        Route::get('/resetsentence','resetSentence');
+        Route::get('/resetreading','resetReading');
         Route::post('/vocab','nextVocab');
         Route::post('/sentence','nextSentence');
         Route::post('/reading','nextReading');

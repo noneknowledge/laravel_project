@@ -38,6 +38,12 @@ class lessionController extends Controller
         dd($reading);
     }
 
+    public function get4Vocab($lessionId,$vocab){
+        $bait = vocab::where([['VocabId','<>',$vocab->VocabID],['LessionId',$lessionId]])->inRandomOrder()->limit(3)->get();
+        $allQuiz = $bait->push($vocab)->shuffle();
+        return $allQuiz;
+    }
+
     public function vocabTest($lessionId){
         $userid = Auth::user()->UserID;
         $doneVocab = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
@@ -46,24 +52,58 @@ class lessionController extends Controller
             });
         })->Count();
 
-        //Trong may co san loai tron lai roi hay dung lai chua sua view
-        $vocab = Vocab::where('LessionID',$lessionId)->skip($doneVocab)->first();
-        dd($vocab);
-        //nho kiem tra neu null se khong co lam bai vi da hoan thanh
+        $question = vocab::where('LessionId',$lessionId)->skip($doneVocab)->first();
+        if($question == null)
+        {
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành vocabulary
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
+        }
 
-        return View('lession.vocab',$vocab);
+        $index = $doneVocab;
+        $score = 0;
+        //nho kiem tra neu null se khong co lam bai vi da hoan thanh
+        $vocabs = self::get4Vocab($lessionId,$question);
+        
+
+   
+        return View('lession.vocab',compact(['vocabs','question','index','score','lessionId']));
     }
 
     public function nextVocab(Request $req){
         //tao view roi tao form gui post len day
+        $userid = Auth::user()->UserID;
+        $istrue = $req->istrue;
+     
+        //Khuc nay nho lay userid cap nhat vao database
+        $newProgress = UserProgress::updateOrCreate(['UserID'=>(int)$userid,'VocabId'=> (int)$req->vocabid],
+        ['IsTrue'=> $req->istrue]  
+        );
         
+        $index = $req->index +1;
+        $score = (int)$req->score;
+      
+        $lessionId = $req->lessionId;
+        $question = vocab::where('LessionId',$lessionId)->skip($index)->first();
+        if($question == null)
+        {
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành vocabulary
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
+        }
+        $vocabs = self::get4Vocab($lessionId,$question);
+
+        return View('lession.vocab',compact(['vocabs','question','index','score','lessionId']));
 
     }
 
     public function resetVocab($lessionId){
         $userid = Auth::user()->UserID;
         //xai where has function
-        $userVocab = UserProgress::where('UserID',$userid)->where('LessionID',$lessionId)->delete();
+        $doneVocab = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->delete();
+       return redirect("/lession/$lessionId/vocab");
 
 
     }
@@ -77,15 +117,17 @@ class lessionController extends Controller
             });
         })->Count();
 
-        $reading = Vocab::where('LessionID',$lessionId)->skip($doneReading)->first();
+        $reading = Reading::where('LessionID',$lessionId)->skip($doneReading)->first();
+       
         if($reading == null)
         {
-            dd($reading);
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành reading
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
         }
         
         //nho kiem tra neu null se khong co lam bai vi da hoan thanh
 
-        return View('lession.vocab',$reading);
+        return View('lession.reading',$reading);
 
     }
     
@@ -94,12 +136,20 @@ class lessionController extends Controller
     }
 
     public function resetReading($lessionId){
+        $userid = Auth::user()->UserID;
+        //xai where has function
+        $doneReading = UserProgress::where('UserID',$userid)->whereHas('readings',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->delete();
+       return redirect("/lession/$lessionId/reading");
 
     }
 
     public function sentenceTest($lessionId){
         $userid = Auth::user()->UserID;
-        $doneSentence = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
+        $doneSentence = UserProgress::where('UserID',$userid)->whereHas('sentences',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
@@ -123,8 +173,11 @@ class lessionController extends Controller
         
         $userid = Auth::user()->UserID;
         $istrue = $req->istrue;
+     
         //Khuc nay nho lay userid cap nhat vao database
-        
+        $newProgress = UserProgress::Create(['UserID'=>(int)$userid,'SentenceId'=> (int)$req->sentenceid
+            ,'IsTrue'=> $req->istrue
+        ]);
         
         $index = $req->index +1;
         $score = (int)$req->score;
@@ -132,7 +185,8 @@ class lessionController extends Controller
         $sentence = Sentence::where('lessionID',$lessionId)->skip($index)->first();
         if ($sentence == null)
         {
-            return Redirect("/lession/$lessionId/test");
+            return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành sentence
+             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
         }
         return View('lession.sentence',compact(['sentence','lessionId','score','index']));
 
@@ -140,6 +194,14 @@ class lessionController extends Controller
 
 
     public function resetSentence($lessionId){
+        $userid = Auth::user()->UserID;
+        //xai where has function
+        $doneSentence = UserProgress::where('UserID',$userid)->whereHas('sentences',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->delete();
+       return redirect("/lession/$lessionId/sentence");
 
     }
 
@@ -149,6 +211,7 @@ class lessionController extends Controller
         $totalVocab = Vocab::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
         })->Count();
+        
 
         $totalSentence =  Sentence::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
@@ -159,19 +222,22 @@ class lessionController extends Controller
         })->Count();
 
    
-        $doneVocab = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
+        $doneVocab = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
+            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
+                $nestQ->where('LessionId',$lessionId);
+            });
+        })->Count();
+        
+
+  
+
+        $doneSentence = UserProgress::where('UserID',$userid)->whereHas('sentences',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
         })->Count();
 
-        $doneSentence = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
-            $query->whereHas('lessions', function($nestQ)  use ($lessionId){
-                $nestQ->where('LessionId',$lessionId);
-            });
-        })->Count();
-
-        $doneReading = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
+        $doneReading = UserProgress::where('UserID',$userid)->whereHas('readings',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
