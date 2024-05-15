@@ -6,7 +6,6 @@ class ReadingQuiz{
         this.question2 = question2
         this.answer = answer
         this.answer2 = answer2
-        console.log(answer2)
         this.builder()
         this.click1 = 0
         this.click2 = 0
@@ -47,7 +46,7 @@ class ReadingQuiz{
         var btn2 = document.createElement("h2")
         btn2.className="border text-center col-5 text-secondary"
         btn2.innerHTML = 'false';
-        btn2.addEventListener('click',this.check1)
+        btn2.addEventListener('click',(event)=>{this.check1(event)})
         btn2.addEventListener('mouseover',this.hoverHandle)
         btn2.addEventListener('mouseout',this.outHover)
         div.appendChild(btn2);
@@ -66,7 +65,7 @@ class ReadingQuiz{
         var btn1 = document.createElement("h2")
         btn1.className="border text-center col-5 text-secondary"
         btn1.innerHTML = 'true';
-        btn1.addEventListener('click',this.check2)
+        btn1.addEventListener('click',(event)=>{this.check2(event)})
         btn1.addEventListener('mouseover',this.hoverHandle)
         btn1.addEventListener('mouseout',this.outHover)
         div.appendChild(btn1);
@@ -110,6 +109,7 @@ class ReadingQuiz{
         element.classList.add('text-light')
        
         score += 100
+        formScore.value = score;
         scorePlace.innerHTML = `Score ${score}`
         // alertBootstrap(alertSuccess,'Bạn đã trả lời đúng câu 1')
     }
@@ -134,6 +134,7 @@ class ReadingQuiz{
         element.classList.add('text-light')
      
         score += 100
+        formScore.value = score;
         scorePlace.innerHTML = `Score ${score}`
         // alertBootstrap(alertSuccess,'Bạn đã trả lời đúng câu 2')
     }

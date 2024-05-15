@@ -105,7 +105,8 @@ Lession {{$lessionId}} Test
     <div class="p-3">
         <hr>
         <div class="d-flex justify-content-between">
-            <h3>Kiểm tra</h3>
+            <h3>Kiểm tra: <span class="{{ $testState =='pass' ? 'text-success' : 'text-danger' }}">{{$myScore}}</span> /<span>{{$maxScore}}</span></h3>
+            <h3>Trạng thái: <span class="{{ $testState =='pass' ? 'text-success' : 'text-danger' }}">{{$testState}}</span></h3>
             <a class="btn btn-primary" href="/lession/{{$lessionId}}/final">Bắt đầu</a>
         </div>
       

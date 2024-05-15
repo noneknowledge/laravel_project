@@ -1,7 +1,6 @@
-console.log('imported')
 
 class ScrambledCont{
-    constructor(question, canva){
+    constructor(question, canva,speaker = true){
         this.question = question.trim()
         this.textClass = ["d-inline","border","p-2","position-absolute","rounded","moveAnimate","h1-clickable","shadow"]
         this.heading = "Hãy sắp xếp các từ sau thành câu hoàn chỉnh."
@@ -9,9 +8,9 @@ class ScrambledCont{
         this.answer = []
         this.toRect
         this.fromRect
+        this.speaker = speaker
         this.speech = new SpeechSynthesisUtterance();
         this.voices = []
-
         this.builder();     
     }   
     createOption(){
@@ -70,7 +69,10 @@ class ScrambledCont{
     }
     textClicked(event){
         var elementVal = event.target.innerHTML
-        this.speak(elementVal);
+        if(this.speaker){
+            this.speak(elementVal);
+        }
+      
         
 
         if (this.answer.find(a=>a.value === elementVal))
@@ -186,7 +188,11 @@ class ScrambledCont{
         this.canva.appendChild(button)
     }
     builder(){
-        this.canva.appendChild(this.createOption());
+        if(this.speaker)
+            {
+                this.canva.appendChild(this.createOption());
+            }
+        
         this.createOutLine()
         this.textAndButton()
        

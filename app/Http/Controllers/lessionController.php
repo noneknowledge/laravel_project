@@ -8,6 +8,7 @@ use App\Models\Vocab;
 use App\Models\Sentence;
 use App\Models\Reading;
 use App\Models\UserProgress;
+use App\Models\UserLession;
 
 use app\Models\LessionTest;
 use Illuminate\Support\Facades\DB;
@@ -35,9 +36,46 @@ class lessionController extends Controller
         $vocabs = Vocab::where('LessionID',$lessionId)->inRandomOrder()->take(5)->get();
         $sentences = Sentence::where('LessionID',$lessionId)->inRandomOrder()->take(3)->get();
         $reading = Reading::where('LessionID',$lessionId)->first();
-        
+        return View('lession.final',compact(['vocabs','sentences','reading','lessionId']));
+    }
 
-        return View('lession.final',compact(['vocabs','sentences','reading']));
+    public function updateFinalTest(Request $req){
+        $userid = Auth::user()->UserID;
+        $status = 'fail';
+       
+        if($req->score >= 700){
+            $status = 'pass';
+        }
+
+        $row = UserLession::Where('LessionID',$req->lessionid)->where('UserID',$userid)->first();
+        $date = now()->toDateString();
+        if($row == null){
+            $newRow = UserLession::create([
+                'UserID'=> $userid,
+                'CompleteDate'=> $date,
+                'LessionID'=> $req->lessionid,
+                'HighScore'=> $req->score,
+                'Status' => $status
+            ]);
+        }
+
+        else{
+         
+            if ($row->HighScore < $req->score)
+            {
+                
+                   //Update khi diem moi cao hon
+                $update = UserLession::updateOrCreate(['UserID'=>$userid, 'LessionID'=> $req->lessionid],
+                ['HighScore' =>$req->score,
+                'CompleteDate'=> $date,
+                'Status' => $status ]);
+           
+            }
+    
+        }
+
+        return redirect("/lession/$req->lessionid/test");
+
     }
 
     public function get4Vocab($lessionId,$vocab){
@@ -232,13 +270,43 @@ class lessionController extends Controller
 
     }
 
+
+    public function canTest($userid,$lessionId){
+        $userTest = UserLession::where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
+        $previousLession = Lession::Select('LessionID')->where("LessionID",'<',$lessionId)->orderBy("LessionID","DESC")->first();
+        if ($userTest->LessionID >= $previousLession->LessionID){
+            dd('canTest');
+        }
+
+        dd('can not test');
+        
+
+    }
+
     public function showTest($lessionId){
         $userid = Auth::user()->UserID;
+
+        self::canTest($userid,$lessionId);
+
         //hinh nhu chua ap dung vo bat ky user id cu the nao
         $totalVocab = Vocab::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
         })->Count();
         
+        $myTest = UserLession::Where('LessionID',$lessionId)->where('UserID',$userid)->first();
+        $myScore = 0;
+        $testState = 'Chưa tham gia';
+        if ($myTest != null){
+            if($myTest->Status != null){
+                $testState = $myTest->Status    ;
+            }
+            if($myTest->HighScore != null)
+            {
+                $myScore = $myTest->HighScore;
+            }
+           
+        };
+        $maxScore = 1000;
 
         $totalSentence =  Sentence::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
@@ -292,13 +360,13 @@ class lessionController extends Controller
         
         return View('lession.test',compact(['lessionId','doneVocabCount','doneReadingCount','doneSentenceCount','totalVocab'
         ,'totalReading','totalSentence','vocabPercent','readPercent','senPercent','pVocabPercent','pReadingPercent',
-        'pSentencePercent','fVocabPercent','fSentencePercent','fReadingPercent',
+        'pSentencePercent','fVocabPercent','fSentencePercent','fReadingPercent','myScore','maxScore','testState'
     ]));
     }
 
     public function getLession($lessionId){
         $lession = lession::find($lessionId);
-        $comments = Db::table("userlession")->where("LessionId",$lessionId)->join('user','userlession.UserID','=','user.UserID')->get();
+        $comments = Userlession::where("LessionId",$lessionId)->whereNotNull('Comment')->join('user','userlession.UserID','=','user.UserID')->get();
         
       
 
