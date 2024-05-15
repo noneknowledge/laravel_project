@@ -15,6 +15,9 @@ class UserLession extends Model
     public $timestamps = false;
     const UPDATED_AT = null;
 
-  
+    public function lessions()
+    {
+      return $this->belongsTo(Lession::class, 'LessionID');
+    }
     
 }

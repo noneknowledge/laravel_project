@@ -10,7 +10,7 @@ use App\Models\Reading;
 use App\Models\UserProgress;
 use App\Models\UserLession;
 
-use app\Models\LessionTest;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -96,7 +96,7 @@ class lessionController extends Controller
         if($question == null)
         {
             return redirect("/lession/$lessionId/test")->withErrors(['msg'=> "Bạn đã hoàn thành vocabulary
-             lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
+            lession: $lessionId. Nếu muốn hãy chọn làm lại từ đầu "]);
         }
 
         $index = $doneVocab;
@@ -274,11 +274,24 @@ class lessionController extends Controller
     public function canTest($userid,$lessionId){
         $userTest = UserLession::where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
         $previousLession = Lession::Select('LessionID')->where("LessionID",'<',$lessionId)->orderBy("LessionID","DESC")->first();
-        if ($userTest->LessionID >= $previousLession->LessionID){
-            dd('canTest');
+        if ($previousLession == null)
+        {
+            return $lessionId;
+        }
+        //Kiem tra truong hop userTest null
+        if($userTest == null)
+        {
+            $lession = Lession::Select('LessionID')->orderBy("LessionID")->get();
+            dd($lession);
+            return false;
         }
 
-        dd('can not test');
+
+        if ($userTest->LessionID >= $previousLession->LessionID){
+            return $lessionId;
+        }
+        $lession = Lession::Select('LessionID')->where("LessionID",'>',$userTest->LessionID)->orderBy("LessionID")->first();
+        return $lession->LessionID;
         
 
     }
@@ -286,8 +299,12 @@ class lessionController extends Controller
     public function showTest($lessionId){
         $userid = Auth::user()->UserID;
 
-        self::canTest($userid,$lessionId);
+        $canTest = self::canTest($userid,$lessionId);
 
+        if($canTest != $lessionId){
+            return redirect("/lession/$lessionId/")->withErrors(['msg'=> "Vui lòng hoàn thành bài trước.",
+            "navigate"=>$canTest]);
+        }
         //hinh nhu chua ap dung vo bat ky user id cu the nao
         $totalVocab = Vocab::whereHas('lessions',function($query) use ($lessionId){
             $query->where('lessionID',$lessionId);
@@ -366,10 +383,11 @@ class lessionController extends Controller
 
     public function getLession($lessionId){
         $lession = lession::find($lessionId);
+        if($lession == null){
+            return abort(404);
+        }
         $comments = Userlession::where("LessionId",$lessionId)->whereNotNull('Comment')->join('user','userlession.UserID','=','user.UserID')->get();
-        
-      
-
+       
 
         return View("lession.lession",compact(['lession','comments']));
     }

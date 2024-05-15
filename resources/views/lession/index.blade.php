@@ -11,8 +11,8 @@
    
 
    @foreach ( $data as $lession )
-   <div *ngFor="let lession of lessions" class="card col-3 m-2" style="width: 18rem;">
-      <img style="height: 200px;" src="{{$lession->Image}}" class="card-img-top" alt="...">
+   <div  class="card col-3 m-2" style="width: 18rem;">
+      <img style="height: 200px;" src="{{$lession->Image}}" class="card-img-top" alt="{{$lession->Title}}">
       <div class="card-body">
         <h5 class="card-title">Lession: {{$lession->LessionID}} - {{$lession->Title}}</h5>
         <p class="card-text">{{$lession->Description}}</p>

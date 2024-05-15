@@ -7,9 +7,10 @@ use App\Models\UserLession;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\lession;
 use Illuminate\Support\Facades\DB;
-use function PHPUnit\Framework\isNull;
+
+
 use Illuminate\Support\Str;
 
 
@@ -55,13 +56,29 @@ class userController extends Controller
     }
     public function showProfile(){
         $curUser = Auth::user();
+        $userid = $curUser->UserID;
+      
+        $userTest = UserLession::select('LessionID')->where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
+        $lastLession = $userTest->LessionID;
+        $userLessions = UserLession::with('lessions')->where('UserID',$userid)->get();
+
+       
+
+        $nextLession = Lession::where("LessionID",'>',$lastLession)->first();
+        
      
-        return View('user.profile',compact(['curUser']));
+        return View('user.profile',compact(['curUser','nextLession','userLessions']));
     }
     public function editProfile(){
         $curUser = Auth::user();
+        $userid = $curUser->UserID;
 
-        return View('user.edit',compact(['curUser']));
+      
+        $userTest = UserLession::select('LessionID')->where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
+        $lastLession = $userTest->LessionID;
+        $userLessions = UserLession::with('lessions')->where('UserID',$userid)->get();
+
+        return View('user.edit',compact(['curUser','userLessions']));
     }
 
     public function postComment(Request $req){
