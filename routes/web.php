@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\userController;
+use App\Http\Controllers\gameController;
 use App\Http\Controllers\lessionController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,9 +26,15 @@ Route::get('/', function () {
 Route::middleware("auth")->group(function(){
     Route::get('/profile',[userController::class,'showProfile']);
     Route::get('/edit',[userController::class,'editProfile']);
+
     Route::post('/editProfile',[userController::class,'postProfile']);
     Route::post('/postComment', [userController::class,'postComment']);
+    Route::get('/duck',[gameController::class,'duckGame']);
+   
 });
+
+
+
 
 Route::prefix('lession')->controller(lessionController::class)->group(function(){
     Route::get('/','index');

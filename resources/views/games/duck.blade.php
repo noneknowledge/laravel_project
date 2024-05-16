@@ -30,9 +30,13 @@
                 <h1 class="d-flex justify-content-center mb-5">Xin chao day la trang di chuyen con vit</h1>
                 <div id="answer" class="border rounded border-success my-5 p-5">
                 </div>
-                <div id="hint" class="border rounded border-primary mb-5 p-5">
+                <hr class="my-4 p5">
+                <div id="hint" class="border rounded border-primary my-5 p-5">
                     
                 </div>
+
+                <hr class="my-4">
+                <hr class="my-4">
                 <form id="gun" style="text-align:center">
                   <input name="bullet" type="text" required>
                 </form>
@@ -41,5 +45,5 @@
 @endsection
 
 @section('scripts')
-<script src="{{asset('js/scrambled.js')}}"></script>
+<script src="{{asset('js/duck.js')}}"></script>
 @endsection
