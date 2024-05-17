@@ -86,7 +86,7 @@ class lessionController extends Controller
 
     public function vocabTest($lessionId){
         $userid = Auth::user()->UserID;
-        $doneVocab = UserProgress::whereHas('vocabs',function($query)  use ($lessionId) {
+        $doneVocab = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
@@ -151,7 +151,7 @@ class lessionController extends Controller
 
     public function readingTest($lessionId){
         $userid = Auth::user()->UserID;
-        $doneReading = UserProgress::whereHas('readings',function($query)  use ($lessionId) {
+        $doneReading = UserProgress::where('UserID',$userid)->whereHas('readings',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
@@ -218,7 +218,6 @@ class lessionController extends Controller
         if($doneSentence > 0){
             $sentence = Sentence::where('lessionID',$lessionId)->skip($doneSentence)->first();
         }
-   
         else{
             $sentence = Sentence::where('lessionID',$lessionId)->first();
         }

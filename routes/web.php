@@ -56,11 +56,6 @@ Route::prefix('lession')->controller(lessionController::class)->group(function()
 
 
     });
-    // Route::get('/{lessionId}/test','showTest')->middleware('auth');
-    // Route::get('/{lessionId}/final','finalTest')->middleware('auth');
-    // Route::get('/{lessionId}/vocab','vocabTest')->middleware('auth');
-    // Route::get('/{lessionId}/sentence','sentenceTest')->middleware('auth');
-    // Route::get('/{lessionId}/reading','readingTest')->middleware('auth');
 
 });
 
