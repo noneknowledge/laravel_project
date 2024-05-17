@@ -98,7 +98,9 @@
                   <div class="card h-100">
                     <div class="card-body">
                     <h6 class="d-flex align-items-center mb-3"><i class="material-icons text-info mr-2">Tiến độ -</i>- bài học</h6>
-                   
+                    @if($userLessions->Count() == 0)
+                      <h1 class='text-center text-danger'>Bạn chưa tham gia bài học nào</h1>
+                      @endif
                       @foreach ( $userLessions as $userLession )
                       
                       <div class='my-4'>

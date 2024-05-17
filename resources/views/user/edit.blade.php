@@ -77,6 +77,9 @@
 				</div>
 			</div>
 			<div class="row m-1 p-4 border rounded">
+			@if($userLessions->Count() == 0)
+			<h1 class='text-center text-danger'>Bạn chưa tham gia bài học nào</h1>
+			@endif
 			@foreach ( $userLessions as $userLession )
 			<div class="card col-4 m-2" style="width: 18rem;">
 				<img style="height: 200px;" src="{{$userLession->Lessions->Image}}" class="card-img-top" alt="{{$userLession->Lessions->Title}}">

@@ -69,6 +69,8 @@ Route::controller(userController::class)->group(function () {
     Route::get('/login', 'index')->name('login');
 
     Route::post('/confirmLogin', 'postLogin')->name("confirmLogin");
+    
+    Route::post('/register', 'postRegister');
 
     Route::get('/register', 'register');
 

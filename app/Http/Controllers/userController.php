@@ -7,6 +7,7 @@ use App\Models\UserLession;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use App\Models\lession;
 use Illuminate\Support\Facades\DB;
 
@@ -29,12 +30,20 @@ class userController extends Controller
 
     public function postRegister(Request $request){
        
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'fullname' => 'required',
             'email' => 'required',
             'username' => 'required | unique:user',
             'password' => 'required',
         ]);
+
+        if ($validator->fails()) {
+            return redirect('/register')
+                        ->withErrors($validator)
+                        ->withInput();
+        }
+    
+
         $randomKey = Str::random(5);
  
         $password = $request->password;
@@ -57,14 +66,20 @@ class userController extends Controller
     public function showProfile(){
         $curUser = Auth::user();
         $userid = $curUser->UserID;
-      
-        $userTest = UserLession::select('LessionID')->where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
-        $lastLession = $userTest->LessionID;
         $userLessions = UserLession::with('lessions')->where('UserID',$userid)->get();
 
+        $userTest = UserLession::select('LessionID')->where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
+        if ($userTest == null)
+        {
+           
+            $nextLession= Lession::first();
+           
+        }
+        else{
+            $lastLession = $userTest->LessionID;
+            $nextLession = Lession::where("LessionID",'>',$lastLession)->first();
+        }
        
-
-        $nextLession = Lession::where("LessionID",'>',$lastLession)->first();
         
      
         return View('user.profile',compact(['curUser','nextLession','userLessions']));
@@ -73,9 +88,6 @@ class userController extends Controller
         $curUser = Auth::user();
         $userid = $curUser->UserID;
 
-      
-        $userTest = UserLession::select('LessionID')->where('UserID',$userid)->where('Status','pass')->orderBy('LessionID','DESC')->first();
-        $lastLession = $userTest->LessionID;
         $userLessions = UserLession::with('lessions')->where('UserID',$userid)->get();
 
         return View('user.edit',compact(['curUser','userLessions']));
@@ -123,6 +135,7 @@ class userController extends Controller
             'username' => 'required',
             'password' => 'required',
         ]);
+
         $username = $request->input('username');
 
         $password = $request->input('password');

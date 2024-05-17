@@ -281,9 +281,8 @@ class lessionController extends Controller
         //Kiem tra truong hop userTest null
         if($userTest == null)
         {
-            $lession = Lession::Select('LessionID')->orderBy("LessionID")->get();
-            dd($lession);
-            return false;
+            $lession = Lession::Select('LessionID')->first();
+            return $lession;
         }
 
 
@@ -333,13 +332,17 @@ class lessionController extends Controller
             $query->where('lessionID',$lessionId);
         })->Count();
 
-   
+        if ($totalReading ==0 || $totalSentence == 0 || $totalVocab == 0){
+            return redirect("/lession/$lessionId/")->withErrors(['msg'=> "Bài này hiện tại vẫn chưa có đủ câu hỏi để tiến hành kiểm tra"]);
+        }
+
+
         $doneVocab = UserProgress::where('UserID',$userid)->whereHas('vocabs',function($query)  use ($lessionId) {
             $query->whereHas('lessions', function($nestQ)  use ($lessionId){
                 $nestQ->where('LessionId',$lessionId);
             });
         });
-
+        
         $doneVocabCount = $doneVocab->count();
 
         $passVocab = $doneVocab->where('IsTrue','true')->count();
