@@ -144,7 +144,7 @@ class userController extends Controller
             ->where ('username', $username )->first();
         
         if ($user === null){
-            dd("Null");
+            return redirect('/login')->withErrors(['msg'=>'Tài khoản không tồn tại']);
         }
    
         $randomKey = $user->RandomKey;
